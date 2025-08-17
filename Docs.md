@@ -1,6 +1,6 @@
 # A. 规范
 
-## 1. 概述
+# 1. 概述
 
 MCP为应用程序提供了一套标准化方案，使其能够：
 
@@ -27,15 +27,15 @@ sequenceDiagram
     C-->>H: 4. 结构化响应
 ```
 
-## 2. 核心特性
+# 2. 核心特性
 
-### 2.1 基础协议
+## 2.1 基础协议
 
 - JSON-RPC 格式的消息
 - 有状态的连接
 - 服务器和客户端可以协商各自具有什么功能
 
-### 2.2 功能（Features）
+## 2.2 功能（Features）
 
 服务器可以向客户端提供以下功能（Features） ：
 
@@ -56,7 +56,7 @@ sequenceDiagram
 - **Elicitation（引导）**：服务器发起的，向用户请求额外信息
     - 客户端协助服务器向用户主动索取额外信息，比如服务器发现数据有丢失，服务器可以利用客户端的**Elicitation**功能向用户索取丢失的数据
 
-### 2.3 辅助功能
+## 2.3 辅助功能
 
 - 配置管理
 - 进度跟踪
@@ -64,32 +64,49 @@ sequenceDiagram
 - 错误报告
 - 日志记录
 
-## 3. 安全与信任规范
+# 3. 安全与信任规范
 
-### 3.1 关键原则
+## 3.1 关键原则
 
 - 用户授权与控制
 - 数据隐私
 - 工具安全
 - LLM采样控制
 
-### 3.2 实现指南
+## 3.2 实现指南
 
 # B. 架构-TODO
 
 https://modelcontextprotocol.io/specification/2025-06-18/architecture
 
 # C. 细节
-## 基础协议
-### 概述
-### 生命周期
-### 传输层
+# 基础协议-TODO
+## 概述-TODO
+## 生命周期-TODO
+## 传输层
+MCP 使用 JSON-RPC 2.0 作为其传输格式。传输层负责将 MCP 协议消息转换为 JSON-RPC 格式进行传输，并将接收到的 JSON-RPC 消息转换回 MCP 
+协议消息。JSON-RPC 消息必须经过UTF-8编码。
 
-MCP 使用 JSON-RPC 2.0 作为其传输格式。传输层负责将 MCP 协议消息转换为 JSON-RPC 格式进行传输，并将接收到的 JSON-RPC 消息转换回 MCP 协议消息。
+### 1. stdio
+```mermaid
+sequenceDiagram
+    participant Client
+    participant ServerProcess as Server Process
 
-流式HTTP
+    Client->>ServerProcess: Launch subprocess
+    loop Message Exchange
+        Client->>ServerProcess: Write to stdin
+        ServerProcess-->>Client: Write to stdout
+        opt Optional logs
+            ServerProcess-->>Client: Optional logs on stderr
+        end
+    end
+    Client->>ServerProcess: Close stdin, terminate subprocess
+```
 
-2.0.1 安全警告
+### 2. 流式HTTP
+
+#### 2.0.1 安全警告
 
 #### 2.1 客户端向服务器发送消息
 
@@ -169,7 +186,7 @@ An MCP “session” consists of logically related interactions between a client
 - 如果客户端不再需要某个会话，则应向MCP端点发送包含Mcp-Session-Id 标头的 HTTP DELETE 消息，以明确终止该会话
     - 服务器对于此请求可以响应HTTP 405 Method Not Allowed，表示不允许客户端结束会话
 
-##### 2.6 时序图 TODO
+#### 2.6 时序图 TODO
 
 https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#sequence-diagram
 
@@ -208,5 +225,5 @@ https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#sequen
 #### 5.2 Ping
 #### 5.3 进度（Progress）
 
-### 6. 客户端功能（Client Features）
-### 7. 服务器功能（Server Features）
+## 客户端功能（Client Features）
+## 服务器功能（Server Features）
