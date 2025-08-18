@@ -15,6 +15,7 @@ Model Context Protocol (MCP) 是一种标准化协议，旨在实现语言模型
 |------------|----------------------------|--------|---------------------|
 | 2025.08.17 | Specification              | 🟢 已完成 | 完成Specification重要部分 |
 |            | Base Protocol - Transports | 🟢 已完成 | 完成传输层-流式HTTP细节      |
+| 2025.08.18 | Client Features            | 🟢 已完成 | 完成客户端能力总结           |
 
 ### 模块开发日志
 <details open>
@@ -25,12 +26,13 @@ Model Context Protocol (MCP) 是一种标准化协议，旨在实现语言模型
 <span style="color:#586069; margin: 0 12px">│</span>
 <strong>文档</strong>：🟡 撰写中
 <span style="color:#586069; margin: 0 12px">│</span>
-<strong>最后更新</strong>：2025.08.17
+<strong>最后更新</strong>：2025.08.18
 </summary>
 
-| 日期         | 代码状态   | 今日代码进度      | 文档总结  | 今日文档进度 |
-|------------|--------|-------------|-------|--------|
-| 2025.08.17 | 🟡 开发中 | 定义McpSchema | ⚪ 未开始 | None   |
+| 日期         | 代码状态   | 今日代码进度      | 文档总结   | 今日文档进度                                                          |
+|------------|--------|-------------|--------|-----------------------------------------------------------------|
+| 2025.08.17 | 🟡 开发中 | 定义McpSchema | ⚪ 未开始  | None                                                            |
+| 2025.08.18 | 🟡 开发中 | None        | 🟡 开发中 | 整理Request、Result、Notification、ClientCapacities、ServerCapacities |
 
 </details>
 
