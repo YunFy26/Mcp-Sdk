@@ -82,6 +82,58 @@ https://modelcontextprotocol.io/specification/2025-06-18/architecture
 # C. 细节
 # 基础协议-TODO
 ## 概述-TODO
+模型上下文协议由几个协同工作的关键组件组成：
+- 基础协议：核心 JSON-RPC 消息类型
+- 生命周期管理：连接初始化、功能协商和会话控制
+- 授权：基于 HTTP 传输的身份验证和授权框架
+- 服务器功能：服务器公开的资源、提示和工具
+- 客户端功能：客户端提供的采样和根目录列表
+- 附加程序：横切关注点，例如日志记录和参数补全
+所有实现都必须支持基础协议和生命周期管理组件。其他组件可以根据应用程序的具体需求进行实现。
+这些协议层建立了清晰的关注点分离，同时支持客户端和服务器之间的丰富交互。模块化设计使实现能够精确支持其所需的功能。
+### 1. 消息规范
+所有MCP客户端与服务器间的消息必须遵循JSON-RPC 2.0规范，协议定义以下消息类型：
+#### 1.1 Request（请求）
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "string | number",
+  "method": "string",
+  "params?": { "[key: string]": "unknown" }
+}
+```
+- 必须包含ID:字符串或数字
+- ID不能为空
+- 同一会话中ID不得重复使用
+#### 1.2 Response（响应）
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "string | number",
+  "result?": { "[key: string]": "unknown" },
+  "error?": {
+    "code": "number",
+    "message": "string",
+    "data?": { "[key: string]": "unknown" }
+  }
+}
+```
+- 必须携带与请求对应的ID
+- 必须包含result或error之一（不可同时存在）
+- result可以遵循任何Json格式，但是error必须包含code和message
+- error code必须为整数
+#### 1.3 Notification（通知）
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "string",
+  "params?": { "[key: string]": "unknown" }
+}
+```
+- 不需要ID
+### 2. 授权-TODO
+### 3. 元数据
+[元数据-java实现](./schema.md)
 ## 生命周期-TODO
 ## 传输层
 MCP 使用 JSON-RPC 2.0 作为其传输格式。传输层负责将 MCP 协议消息转换为 JSON-RPC 格式进行传输，并将接收到的 JSON-RPC 消息转换回 MCP 
@@ -226,4 +278,123 @@ https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#sequen
 #### 5.3 进度（Progress）
 
 ## 客户端功能（Client Features）
+### roots
+模型上下文协议（MCP）为客户端向服务端暴露文件系统"根目录"提供了标准化方案。根目录定义了服务端可操作的文件系统边界，
+使其明确可访问的目录和文件范围。支持该特性的客户端会响应服务端的根目录列表请求，并在列表变更时主动推送通知。
+#### 1. 用户交互模型
+根目录通常通过工作区或项目配置界面暴露，例如：
+- 提供工作区/项目选择器，允许用户指定服务端可访问的目录
+- 结合版本控制系统或项目文件自动检测工作区
+#### 2 能力
+客户端如果支持根目录功能，必须在初始化阶段声明其支持的根目录功能：
+```json
+{
+  "capabilities": {
+    "roots": {
+      "listChanged": true
+    }
+  }
+}
+```
+`listChanged`表示客户端是否支持根目录变更通知（当根目录发生改变时，通知服务器）
+#### 3 协议消息
+##### 3.1 获取根目录列表
+服务器向客户端发送roots/list请求，获取根目录
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "roots/list"
+}
+```
+
+客户端向服务器返回Response
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "roots": [
+      {
+        "uri": "file:///home/user/projects/myproject",
+        "name": "My Project"
+      }
+    ]
+  }
+}
+```
+
+##### 3.2 根目录变更通知
+当根目录发生变化时，支持`listChanged`的客户端应向服务器发送通知：
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/roots/list_changed"
+}
+```
+#### 4.消息流
+#### 5.数据类型
+##### 5.1 根目录定义
+“根”定义包括
+- uri: 独一无二的root标识，（在2025-06-18规范下）必须以file://开头
+- name: 可选的根目录名称，用于用户界面展示
+###### 5.1.1 单项目目录
+```json
+{
+  "uri": "file:///home/user/projects/myproject",
+  "name": "My Project"
+}
+```
+###### 5.1.2 多模块项目目录
+```json
+[
+  {
+    "uri": "file:///home/user/repos/frontend",
+    "name": "Frontend Repository"
+  },
+  {
+    "uri": "file:///home/user/repos/backend",
+    "name": "Backend Repository"
+  }
+]
+```
+#### 6.错误处理
+客户端应该返回标准的JSON-RPC错误
+- 客户端不支持根目录提供能力：-32601（Method not found）
+- 内部错误：-32063
+例如：
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32601,
+    "message": "Roots not supported",
+    "data": {
+      "reason": "Client does not have roots capability"
+    }
+  }
+}
+```
+#### 7.安全性
+客户端必须
+- 仅暴露具有合法权限的根目录
+- 校验所有URI防止路径遍历攻击
+- 实施访问控制策略
+- 监控根目录可访问性
+服务器应该
+- 处理根目录不可用的情况
+- 在操作中严格遵循目录边界
+- 根据提供的根目录校验所有路径
+#### 实现指南
+客户端建议
+- 暴露根目录前需获得用户确认
+- 提供直观的根目录管理界面
+- 预先校验目录可访问性
+- 监控根目录变更
+服务器建议
+- 使用前检查roots能力声明
+- 优雅处理根目录列表变更
+- 在操作中尊重目录边界
+- 合理缓存根目录信息
 ## 服务器功能（Server Features）
