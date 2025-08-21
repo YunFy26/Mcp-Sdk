@@ -237,7 +237,7 @@ public final class McpSchema {
         @JsonProperty("protocolVersion") String protocolVersion,
         @JsonProperty("capabilities") ClientCapabilities capabilities,
         @JsonProperty("clientInfo") Implementation clientInfo,
-        @JsonProperty("meta") Map<String, Object> meta) implements Request { // @formatter:on
+        @JsonProperty("_meta") Map<String, Object> meta) implements Request { // @formatter:on
 
         public InitializeRequest(String protocolVersion, ClientCapabilities capabilities, Implementation clientInfo) {
             this(protocolVersion, capabilities, clientInfo, null);
