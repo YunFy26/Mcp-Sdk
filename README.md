@@ -48,12 +48,13 @@ Model Context Protocol (MCP) 是一种标准化协议，旨在实现语言模型
 <span style="color:#586069; margin: 0 12px">│</span>
 <strong>文档</strong>：🟡 撰写中
 <span style="color:#586069; margin: 0 12px">│</span>
-<strong>最后更新</strong>：2025.08.21
+<strong>最后更新</strong>：2025.08.25
 </summary>
 
 | 日期         | 代码状态   | 今日代码进度                                                 | 文档总结   | 今日文档进度                                                          |
 |------------|--------|--------------------------------------------------------|--------|-----------------------------------------------------------------|
 | 2025.08.21 | 🟡 开发中 | 定义McpTransport、McpClientTransport、McpServerTransport接口 | ⚪ 未开始  | None                                                            |
+| 2025.08.25 | 🟡 开发中 | HttpClientSseTransport#sendMessage()                   | ⚪ 未开始  | None                                                            |
 
 </details>
 
